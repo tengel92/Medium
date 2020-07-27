@@ -1,0 +1,12 @@
+{
+    "compilerOptions": {
+        "target": "es6",
+        "module": "commonjs",
+        "declaration": true,
+        "outDir": "./compiled_typescript",
+        "strict": true,
+        "types": []
+    },
+    "include": ["typescript"],
+    "exclude": ["node_modules"],
+}
