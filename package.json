@@ -3,10 +3,11 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "js": "node javascript/index",
-    "ts": "ts-node typescript/index"
+    "ts": "tsc && node dist/index"
   },
   "repository": {
     "type": "git",
@@ -20,7 +21,10 @@
   },
   "homepage": "https://github.com/tengel92/Medium#readme",
   "devDependencies": {
-    "ts-node": "^8.10.2",
+    "@types/node": "^14.0.26",
     "typescript": "^3.9.7"
+  },
+  "dependencies": {
+    "chalk": "^4.1.0"
   }
 }
