@@ -1,0 +1,81 @@
+{
+	"info": {
+		"_postman_id": "a29a0f23-7032-438c-9a8d-122de7310c6e",
+		"name": "JSONPlaceholder",
+		"description": "This is a Collection of requests for [JSONPlaceholder](https://jsonplaceholder.typicode.com)\n\nEndpoints we will have in the collection will be: \n\n`user`\n`posts`",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Get all users",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "463c77a3-7131-44c2-adb9-387dcb691091",
+						"exec": [
+							"console.log(`This is environment we have selected: ${pm.environment.name}`)",
+							"",
+							"console.log(`This is the url we sent our request to: ${pm.environment.get('json_placeholder_url')}`)",
+							"",
+							"// if(pm.environment.name.includes('PROD')) {",
+							"//     throw new Error(`You are currently pointed to ${pm.environment.name} which is the PROD environment. Are you sure you know what you are doing?`)",
+							"// }",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "363c5d5c-cbe5-4f30-a4f3-82f6b70dd36b",
+						"exec": [
+							"const responses = JSON.parse(responseBody);",
+							"",
+							"const english_ordinal_rules = new Intl.PluralRules('en-US', {type: 'ordinal'});",
+							"const suffixes = {one: 'st', two: 'nd', few: 'rd', other: 'th'};",
+							"const getNumberWithOrdinal = (number) => {",
+							"\tconst suffix = suffixes[english_ordinal_rules.select(number)];",
+							"\treturn (number + suffix);",
+							"}",
+							"",
+							"pm.test(`Retrieved data from the ${pm.environment.name} environment.`, () => {",
+							"    pm.expect(pm.response.code).to.be.ok",
+							"});",
+							"",
+							"if(responses) {",
+							"    responses.forEach((response, index) => {",
+							"        // responses[0].name = null;",
+							"        pm.test(`The ${getNumberWithOrdinal(index + 1)} of ${responses.length} users has a name of: ${response.name}`, () => {",
+							"            pm.expect(response.name).to.not.be.null",
+							"        });",
+							"    });",
+							"}",
+							"",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{json_placeholder_url}}/users",
+					"host": [
+						"{{json_placeholder_url}}"
+					],
+					"path": [
+						"users"
+					]
+				},
+				"description": "Get all users from [here](https://jsonplaceholder.typicode.com/users)"
+			},
+			"response": []
+		}
+	],
+	"protocolProfileBehavior": {}
+}
