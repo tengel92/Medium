@@ -2,7 +2,7 @@ import { Logger } from './logger';
 
 const log = new Logger();
 
-export interface User {
+interface User {
   id: number;
   name: string;
   username: string;
@@ -14,18 +14,20 @@ export interface User {
   logCompany?: (company: Company) => void;
 }
 
-export interface Address {
+interface Address {
   street: string;
   suite: string;
   city: string;
   zipcode: string;
-  geo: {
-    lat: string;
-    lng: string;
-  };
+  geo: GeoCoordinates;
 }
 
-export interface Company {
+interface GeoCoordinates {
+  lat: string;
+  lng: string;
+}
+
+interface Company {
   name: string;
   catchPhrase: string;
   bs: string;
