@@ -9,6 +9,16 @@ export class Logger {
         loggedResult = chalk.red(result);
       }
     }
-    return log(`${chalk.green.bold('Result: ')} ${chalk.green(message)} ${loggedResult}`);
+    return log(`
+      ${chalk.green.bold('Result: ')} ${chalk.green(message)} ${loggedResult}
+    `);
+  }
+
+  performance(message, start, end) {
+    const total = end - start;
+    return log(`
+      ${chalk.green.bold('Result: ')} ${chalk.green(message)} 
+      ${chalk.green.bold(`Total: `)} ${chalk.green(`${total.toFixed(4)} ms`)}
+    `);
   }
 }
