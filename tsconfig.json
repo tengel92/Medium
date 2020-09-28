@@ -6,7 +6,7 @@
     "module": "ESNext",
     "moduleResolution": "node",
     "experimentalDecorators": true,
-    "importHelpers": true,
+    "importHelpers": false,
     "outDir": "./dist",
     "strict": true,
     "types": ["node"],
