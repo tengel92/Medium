@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
     "allowSyntheticDefaultImports": true,
+    "allowJs": true,
     "target": "es6",
     "module": "ESNext",
     "moduleResolution": "node",
@@ -8,7 +9,7 @@
     "importHelpers": true,
     "outDir": "./dist",
     "strict": true,
-    "types": [],
+    "types": ["node"],
     "typeRoots": ["node_modules/@types"]
   },
   "include": ["typescript"],

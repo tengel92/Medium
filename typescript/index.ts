@@ -1,2 +1,3 @@
-const message: string = 'Hello World';
-console.log(message);
+import * as interfaces from './interfaces.js';
+
+interfaces;

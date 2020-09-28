@@ -10,7 +10,9 @@
     "js:strings": "node javascript/strings",
     "js:loops": "node javascript/loops",
     "ts": "tsc && node dist/index",
-    "ts:interfaces": "node --experimental-specifier-resolution=node --loader ts-node/esm.mjs typescript/interfaces.ts"
+    "ts:interfaces": "node --experimental-specifier-resolution=node --loader ts-node/esm.mjs typescript/interfaces.ts",
+    "ts:postman": "node --experimental-specifier-resolution=node --loader ts-node/esm.mjs typescript/postman.ts",
+    "ts:promises": "node --experimental-specifier-resolution=node --loader ts-node/esm.mjs typescript/promises.ts"
   },
   "repository": {
     "type": "git",
@@ -24,11 +26,18 @@
   },
   "homepage": "https://github.com/tengel92/Medium#readme",
   "devDependencies": {
+    "@types/axios": "^0.14.0",
+    "@types/chalk": "^2.2.0",
+    "@types/dotenv": "^8.2.0",
+    "@types/newman": "^5.1.1",
     "@types/node": "^14.0.26",
+    "axios": "^0.20.0",
+    "chalk": "^4.1.0",
+    "dotenv": "^8.2.0",
+    "newman": "^5.2.0",
     "typescript": "^3.9.7"
   },
   "dependencies": {
-    "chalk": "^4.1.0",
     "ts-node": "^9.0.0",
     "tslib": "^2.0.1"
   }
