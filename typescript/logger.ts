@@ -2,26 +2,25 @@ import chalk from 'chalk';
 const log = console.log;
 
 export class Logger {
-  result(message: string, result?: string) {
+  result(message: string, result?: string | boolean): void {
     let loggedResult = '';
-    if (result && typeof result === 'boolean') {
-      if (result === false) {
+    if (typeof result === 'boolean') {
+      if (!result) {
         loggedResult = chalk.red(result);
       }
     }
-    return log(`${chalk.green.bold('Result: ')} ${chalk.green(message)} ${chalk.green(loggedResult)}`);
+    log(`${chalk.green.bold('Result: ')} ${chalk.green(message)} ${chalk.green(loggedResult)}`);
   }
-
-  performance(message: string, start: number, end: number) {
+  performance(message: string, start: number, end: number): void {
     const total = end - start;
-    return log(`
+    log(`
       ${chalk.green.bold('Result: ')} ${chalk.green(message)} 
       ${chalk.green.bold(`Total: `)} ${chalk.green(`${total.toFixed(4)} ms`)}
     `);
   }
 
-  error(error: any) {
-    return log(`
+  error(error: any): void {
+    log(`
       ${chalk.red.bold('Encountered an error: ')} ${chalk.red(error)} 
     `);
   }

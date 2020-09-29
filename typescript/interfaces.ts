@@ -33,7 +33,7 @@ interface Company {
   bs: string;
 }
 
-const logUserAddress = (userAddress: Address | Address[]) => {
+const logUserAddress = (userAddress: Address | Address[]): void => {
   if (Array.isArray(userAddress)) {
     log.result(`The user has ${userAddress.length} addresses`);
     for (const [index, address] of userAddress.entries()) {
@@ -44,7 +44,7 @@ const logUserAddress = (userAddress: Address | Address[]) => {
   }
 };
 
-const getUser = (users: User[]) => {
+const getUser = (users: User[]): void => {
   for (const user of users) {
     log.result(`The user's name is ${user.name}`);
     log.result(`The user's phone number is ${user.phone}`);
