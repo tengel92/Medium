@@ -79,6 +79,26 @@ async function getEnvironmentData(): Promise<PostmanMetadata[] | undefined> {
   }
 }
 
+async function getAllPostmanData(): Promise<[Collection[], PostmanMetadata[]]> {
+  let collectionData: Collection[] = [];
+  let environmentData: PostmanMetadata[] = [];
+
+  const collectionMetadata = await getCollectionMetadata();
+  if (collectionMetadata) {
+    const collections = await getCollectionData(collectionMetadata);
+    if (collections) {
+      collectionData.push(...collections);
+    }
+  }
+
+  const environmentQuery = await getEnvironmentData();
+  if (environmentQuery) {
+    environmentData.push(...environmentQuery);
+  }
+
+  return [collectionData, environmentData];
+}
+
 async function executeNewmanRequest(
   collection: Collection,
   globalVariables?: VariableDefinition[],
@@ -114,35 +134,29 @@ async function executeNewmanRequest(
   }
 }
 
-async function getAllPostmanData(): Promise<[Collection[], PostmanMetadata[]]> {
-  let collectionData: Collection[] = [];
-  let environmentData: PostmanMetadata[] = [];
-
-  const collectionMetadata = await getCollectionMetadata();
-  if (collectionMetadata) {
-    const collections = await getCollectionData(collectionMetadata);
-    if (collections) {
-      collectionData.push(...collections);
+async function filterAndExecute(
+  collectionName: string,
+  requestName: string,
+  collectionData: Collection[]
+): Promise<NewmanResponse | undefined> {
+  try {
+    let response;
+    const filteredCollection = filterCollection(collectionName, collectionData);
+    if (filteredCollection) {
+      const filteredRequest = filterRequest(requestName, filteredCollection);
+      if (filteredRequest) {
+        response = await executeNewmanRequest(filteredRequest);
+      }
     }
+    return response;
+  } catch (error) {
+    log.error(error);
   }
-
-  const environmentQuery = await getEnvironmentData();
-  if (environmentQuery) {
-    environmentData.push(...environmentQuery);
-  }
-
-  return [collectionData, environmentData];
 }
 
 const [collectionData, environmentData] = await getAllPostmanData();
 // console.log(`Collections: `, JSON.stringify(collectionData));
 // console.log(`Environments: `, JSON.stringify(environmentData));
 
-const filteredCollection = filterCollection('Node Requests', collectionData);
-if (filteredCollection) {
-  const filteredRequest = filterRequest('getAllUsers', filteredCollection);
-  if (filteredRequest) {
-    const response = await executeNewmanRequest(filteredRequest);
-    log.result(`Response: ${response?.responseData}`);
-  }
-}
+const response = await filterAndExecute('Node Requests', 'getAllUsers', collectionData);
+log.result(`Response ${response?.responseData}`);
