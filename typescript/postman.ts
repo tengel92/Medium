@@ -28,16 +28,16 @@ const log = new Logger();
 
 const POSTMAN_API_KEY = process.env.POSTMAN_API_KEY;
 
-// using any as Collection[] for some reason complains about .info. in collection.info.name
-function filterCollection(collectionName: string, collections: any[]): any {
-  return collections.filter((collection) => {
-    if (collection.info.name === collectionName) {
-      return collection as Collection;
-    }
-  });
+function filterCollection(collectionName: string, collections: any[]): Collection | undefined {
+  return collections.find((collection: any) => collection.info.name === collectionName);
 }
 
-//TODO: Ideally should have a better return type of any. Can't seem to get Collection from newman package to work here
+function filterRequest(requestName: string, collection: any): Collection | undefined {
+  const specificRequest = collection.item.find((item: any) => item.name === requestName);
+  collection.item = specificRequest;
+  return collection;
+}
+
 async function getCollectionData(collectionMetadata: PostmanMetadata[]): Promise<Collection[] | undefined> {
   try {
     const promiseArray: Promise<AxiosResponse<any>>[] = [];
@@ -47,8 +47,7 @@ async function getCollectionData(collectionMetadata: PostmanMetadata[]): Promise
       );
     }
     const allResponses = await Promise.allSettled(promiseArray);
-    // TODO: comeback to put better type of any
-    const collectionData: any[] = [];
+    const collectionData: Collection[] = [];
     allResponses.forEach((response) => {
       if (response.status === 'fulfilled') {
         collectionData.push(response.value.data.collection);
@@ -115,27 +114,35 @@ async function executeNewmanRequest(
   }
 }
 
-let collectionData: Collection[] = [];
-let filteredCollection: any;
+async function getAllPostmanData(): Promise<[Collection[], PostmanMetadata[]]> {
+  let collectionData: Collection[] = [];
+  let environmentData: PostmanMetadata[] = [];
 
-const collectionMetadata = await getCollectionMetadata();
-if (collectionMetadata) {
-  const collections = await getCollectionData(collectionMetadata);
-  if (collections) {
-    collectionData.push(...collections);
-    filteredCollection = filterCollection('Node Requests', collectionData);
-    console.log(filteredCollection);
+  const collectionMetadata = await getCollectionMetadata();
+  if (collectionMetadata) {
+    const collections = await getCollectionData(collectionMetadata);
+    if (collections) {
+      collectionData.push(...collections);
+    }
+  }
+
+  const environmentQuery = await getEnvironmentData();
+  if (environmentQuery) {
+    environmentData.push(...environmentQuery);
+  }
+
+  return [collectionData, environmentData];
+}
+
+const [collectionData, environmentData] = await getAllPostmanData();
+// console.log(`Collections: `, JSON.stringify(collectionData));
+// console.log(`Environments: `, JSON.stringify(environmentData));
+
+const filteredCollection = filterCollection('Node Requests', collectionData);
+if (filteredCollection) {
+  const filteredRequest = filterRequest('getAllUsers', filteredCollection);
+  if (filteredRequest) {
+    const response = await executeNewmanRequest(filteredRequest);
+    log.result(`Response: ${response?.responseData}`);
   }
 }
-const environmentData = await getEnvironmentData();
-
-// if (collectionData && environmentData) {
-//   for (const collection of collectionData) {
-//     if (collection.collection.info.name === 'JSON Placeholder') {
-//       console.log(collection.collection);
-//     }
-//   }
-// }
-
-// log.result(`Collection Data: ${JSON.stringify(collectionData)}`);
-// log.result(`Environment Data: ${JSON.stringify(environmentData)}`);
