@@ -1,6 +1,7 @@
-import {
-  Logger
-} from './logger.js';
+// Related Medium Article
+// https://medium.com/javascript-in-plain-english/useful-examples-of-almost-all-javascript-string-functions-4131f3f990f2
+
+import { Logger } from './logger.js';
 const log = new Logger();
 
 const userFeature = ` 12345: Create shipping component with 'Use this address' and 'Add new address...' buttons `;

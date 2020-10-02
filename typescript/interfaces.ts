@@ -1,3 +1,6 @@
+// Related Medium Article
+// https://medium.com/better-programming/a-comprehensive-guide-to-typescript-interfaces-16c5749fac2b
+
 import { Logger } from './logger.js';
 
 const log = new Logger();
