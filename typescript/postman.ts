@@ -70,7 +70,30 @@ async function getCollectionMetadata(): Promise<PostmanMetadata[] | undefined> {
   }
 }
 
-async function getEnvironmentData(): Promise<PostmanMetadata[] | undefined> {
+async function getEnvironmentData(environmentMetadata: PostmanMetadata[]): Promise<VariableDefinition[] | undefined> {
+  try {
+    const promiseArray: Promise<AxiosResponse<any>>[] = [];
+    for (const environment of environmentMetadata) {
+      promiseArray.push(
+        axios.get(`https://api.getpostman.com/environments/${environment.uid}?apikey=${POSTMAN_API_KEY}`)
+      );
+    }
+    const allResponses = await Promise.allSettled(promiseArray);
+    const environmentData: VariableDefinition[] = [];
+    allResponses.forEach((response) => {
+      if (response.status === 'fulfilled') {
+        environmentData.push(response.value.data.environment);
+      } else {
+        log.error(`An error occurred for ${response}`);
+      }
+    });
+    return environmentData;
+  } catch (error) {
+    log.error(error);
+  }
+}
+
+async function getEnvironmentMetadata(): Promise<PostmanMetadata[] | undefined> {
   try {
     const environmentResponse = await axios.get(`https://api.getpostman.com/environments?apikey=${POSTMAN_API_KEY}`);
     return environmentResponse.data.environments;
@@ -79,9 +102,9 @@ async function getEnvironmentData(): Promise<PostmanMetadata[] | undefined> {
   }
 }
 
-async function getAllPostmanData(): Promise<[Collection[], PostmanMetadata[]]> {
+async function getAllPostmanData(): Promise<[Collection[], VariableDefinition[]]> {
   let collectionData: Collection[] = [];
-  let environmentData: PostmanMetadata[] = [];
+  let environmentData: VariableDefinition[] = [];
 
   const collectionMetadata = await getCollectionMetadata();
   if (collectionMetadata) {
@@ -91,9 +114,12 @@ async function getAllPostmanData(): Promise<[Collection[], PostmanMetadata[]]> {
     }
   }
 
-  const environmentQuery = await getEnvironmentData();
-  if (environmentQuery) {
-    environmentData.push(...environmentQuery);
+  const environmentMetadata = await getEnvironmentMetadata();
+  if (environmentMetadata) {
+    const environments = await getEnvironmentData(environmentMetadata);
+    if (environments) {
+      environmentData.push(...environments);
+    }
   }
 
   return [collectionData, environmentData];
